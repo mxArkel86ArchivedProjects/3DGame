@@ -17,6 +17,9 @@ public class Vector {
 	public Vector subtract(Vector in) {
 		return new Vector(x-in.x, y-in.y, z-in.z);
 	}
+	public Vector add(Vector in) {
+		return new Vector(x+in.x, y+in.y, z+in.z);
+	}
 	public Vector multiply(double mult) {
 		return new Vector(x*mult, y*mult, z*mult);
 	}

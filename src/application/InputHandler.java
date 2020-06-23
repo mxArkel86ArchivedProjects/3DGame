@@ -13,9 +13,22 @@ import java.awt.event.WindowListener;
 public class InputHandler implements MouseListener, KeyListener, MouseMotionListener, ComponentListener {
 	public SharedAttributes sa;
 	@Override
-	public void keyPressed(KeyEvent arg0) {
+	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+		switch(e.getKeyCode()) {
+		case KeyEvent.VK_D:
+			sa.rotationx+=0.1f;
+			break;
+		case KeyEvent.VK_A:
+			sa.rotationx-=0.1f;
+			break;
+		case KeyEvent.VK_W:
+			sa.rotationy+=0.1f;
+			break;
+		case KeyEvent.VK_S:
+			sa.rotationy-=0.1f;
+			break;
+		}
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package application;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -68,7 +67,7 @@ public class App extends JFrame {
 			public void paintComponent(Graphics g) {
 				g.setColor(Color.WHITE);
 				g.fillRect(0, 0, GameSettings.windowSize.getWidth(),GameSettings.windowSize.getHeight());
-				g.setFont(new Font("Arial", Font.BOLD, 24));
+				
 				cycleRender.drawComponent(g);
 			}
 		};
