@@ -11,6 +11,10 @@ public class Point {
 		this.x = x;
 		this.y = y;
 	}
+	public Point(java.awt.Point point) {
+		this.x = point.x;
+		this.y = point.y;
+	}
 	public int getX() {
 		return (int)(x);
 	}

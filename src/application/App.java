@@ -27,7 +27,7 @@ public class App extends JFrame {
         app = new App();
         app.initGUI();
         app.ShowApp();
-
+        
     }
 
 	public void ShowApp() {
@@ -44,12 +44,16 @@ public class App extends JFrame {
 		setSize(new Dimension(GameSettings.windowSize.getWidth(),GameSettings.windowSize.getHeight()));
 		setResizable(true);
 		
-		cycleRunner = new GameCycleRunner();
-		cycleRender = new GameCycleRender();
 		
+		cycleRender = new GameCycleRender();
+		cycleRunner = new GameCycleRunner();
 		InitializeGlobals();
-		InitializeRender();
+		cycleRender.init();
+		
 		InitializeTimers();
+		InitializeRender();
+		
+		
 	}
 
 	private void InitializeGlobals() {
@@ -77,14 +81,15 @@ public class App extends JFrame {
 	public void InitializeTimers(){
 		gameTimer = new Timer();
 		drawTimer = new Timer();
+		gameTimer.scheduleAtFixedRate(cycleRunner, 0l, GameSettings.backend_refresh_rate);
 		drawTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
+				if(drawPanel!=null)
 				drawPanel.repaint();
 			}
 
 		}, 0l, (long) (1000/GameSettings.refresh_rate));
-		gameTimer.scheduleAtFixedRate(cycleRunner, 0l, 10l);
 	}
 }
 

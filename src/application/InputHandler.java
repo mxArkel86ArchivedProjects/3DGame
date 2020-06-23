@@ -10,6 +10,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import utilities.Point;
+
 public class InputHandler implements MouseListener, KeyListener, MouseMotionListener, ComponentListener {
 	public SharedAttributes sa;
 	@Override
@@ -17,24 +19,36 @@ public class InputHandler implements MouseListener, KeyListener, MouseMotionList
 		// TODO Auto-generated method stub
 		switch(e.getKeyCode()) {
 		case KeyEvent.VK_D:
-			sa.rotationx+=0.1f;
+			sa.keyInput.d = true;
 			break;
 		case KeyEvent.VK_A:
-			sa.rotationx-=0.1f;
+			sa.keyInput.a = true;
 			break;
 		case KeyEvent.VK_W:
-			sa.rotationy+=0.1f;
+			sa.keyInput.w = true;
 			break;
 		case KeyEvent.VK_S:
-			sa.rotationy-=0.1f;
+			sa.keyInput.s = true;
 			break;
 		}
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void keyReleased(KeyEvent e) {
+		switch(e.getKeyCode()) {
+		case KeyEvent.VK_D:
+			sa.keyInput.d = false;
+			break;
+		case KeyEvent.VK_A:
+			sa.keyInput.a = false;
+			break;
+		case KeyEvent.VK_W:
+			sa.keyInput.w = false;
+			break;
+		case KeyEvent.VK_S:
+			sa.keyInput.s = false;
+			break;
+		}
 	}
 
 	@Override
@@ -78,10 +92,15 @@ public class InputHandler implements MouseListener, KeyListener, MouseMotionList
 		
 	}
 
+	Point mousePrev_;
 	@Override
-	public void mouseMoved(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void mouseMoved(MouseEvent e) {
+		Point p = new Point(e.getPoint());
+		if(mousePrev_==null)
+			mousePrev_=p;
+		sa.keyInput.mouseCurrent = p;
+		sa.keyInput.mousePrev = mousePrev_;
+		mousePrev_ = p;
 	}
 
 	@Override
