@@ -3,13 +3,13 @@ package utilities;
 import java.awt.Color;
 import java.util.ArrayList;
 
-public class Voxel {
+public class Polygon {
 	public ArrayList<Vector> vectors = new ArrayList<Vector>();
-	public Voxel(Vector...vectors) {
+	public Polygon(Vector...vectors) {
 		for(Vector v : vectors)
 			this.vectors.add(v);
 	}
-	public Voxel() {
+	public Polygon() {
 		
 	}
 	public void addVector(Vector v) {
