@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import gameobject.entities.Player;
 import render.Game;
 
 public class App extends JFrame {
@@ -57,7 +58,6 @@ public class App extends JFrame {
 		mousePoll = new MousePolling();
 		DefineWorld();
 		InitializeGlobals();
-		cycleRender.init();
 		
 		InitializeTimers();
 		InitializeRender();
@@ -74,6 +74,7 @@ public class App extends JFrame {
 	private void InitializeGlobals() {
 		sharedAttributes = new SharedAttributes();
 		sharedAttributes.game = game;
+		sharedAttributes.player = new Player();
 		
 		cycleRender.sa = sharedAttributes;
 		cycleRunner.sa = sharedAttributes;

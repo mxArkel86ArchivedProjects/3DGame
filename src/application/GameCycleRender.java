@@ -23,9 +23,6 @@ public class GameCycleRender {
 	int mult = 40;
 	int vectormax = 0;
 	int voxelmax = -1;
-	Point offset = new Point(100, 1 * mult);
-	Point offset2 = new Point(100, 0);
-	Point offset4 = new Point(100, 2 * mult);
 	Point offset3 = new Point(400, 350);
 
 	public void drawComponent(Graphics g) {
@@ -35,9 +32,9 @@ public class GameCycleRender {
 
 		ArrayList<GameObject> gameObjects = (ArrayList<GameObject>) (sa.game.gameObjects.clone());
 		for (GameObject obj : gameObjects) {
-			// ArrayList<Vector> vectors = (ArrayList<Vector>)(sa.vectors.clone());
 			for (int i = 0; i < obj.polygons.size(); i++) {
 				Polygon poly = obj.polygons.get(i);
+				
 				java.awt.Polygon p = new java.awt.Polygon();
 				for (Vector v : poly.vectors) {
 					if (v.out == null)
@@ -51,6 +48,7 @@ public class GameCycleRender {
 			}
 		}
 
+		//look angles
 		g.setColor(Color.RED);
 		g.drawOval(20, 20, 100, 100);
 		g.drawLine(70, 70, (int) (70 + Math.cos(sa.lookanglex) * 50), (int) (70 + Math.sin(sa.lookanglex) * -50));
@@ -58,12 +56,15 @@ public class GameCycleRender {
 		g.drawOval(20, 130, 100, 100);
 		g.drawLine(70, 180, (int) (70 + Math.cos(sa.lookangley) * 50), (int) (180 + Math.sin(sa.lookangley) * -50));
 
+		g.drawOval(60, 290, 20, 20);//70, 300
+		g.drawOval((int)(65+sa.player.transform.x*10), (int)(295-sa.player.transform.y*10), 10, 10);
+		
+		
 		long end = System.currentTimeMillis();
 		sa.frontendcompletion = end - start;
 		g.setFont(new Font("Arial", Font.BOLD, 16));
 		g.setColor(Color.BLACK);
-		g.drawString(String.format("rotationx= %.2f | %.2f", sa.rotationx, Math.toDegrees(sa.rotationx)), 10, 20);
-		g.drawString(String.format("rotationy= %.2f | %.2f", sa.rotationy, Math.toDegrees(sa.rotationy)), 10, 50);
+		g.drawString(String.format("playerpos= %.1f | %.1f | %.1f", sa.player.transform.x, sa.player.transform.y, sa.player.transform.z), 10, 20);
 		g.drawString(String.format("backend completion time= %.0f/%d", (float) (sa.backendcompletion),
 				GameSettings.backend_refresh_rate), 10, 80);
 		g.drawString(String.format("frontend completion time= %.0f/%.1f", (float) (sa.frontendcompletion),
@@ -88,10 +89,6 @@ public class GameCycleRender {
 		double w2 = Math.cos(rotation) * width + Math.sin(rotation) * height;
 		double h2 = Math.cos(rotation) * height + Math.sin(rotation) * width;
 		return new Point(w2 - width, h2 - height);
-	}
-
-	public void init() {
-		
 	}
 
 }

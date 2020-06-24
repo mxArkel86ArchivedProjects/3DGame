@@ -23,38 +23,34 @@ public class InputHandler implements MouseListener, KeyListener, MouseMotionList
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
+		keyInput(e, true);
+	}
+
+	private void keyInput(KeyEvent e, boolean b) {
 		switch(e.getKeyCode()) {
 		case KeyEvent.VK_D:
-			sa.keyInput.d = true;
+			sa.keyInput.d = b;
 			break;
 		case KeyEvent.VK_A:
-			sa.keyInput.a = true;
+			sa.keyInput.a = b;
 			break;
 		case KeyEvent.VK_W:
-			sa.keyInput.w = true;
+			sa.keyInput.w = b;
 			break;
 		case KeyEvent.VK_S:
-			sa.keyInput.s = true;
+			sa.keyInput.s = b;
+			break;
+		case KeyEvent.VK_SPACE:
+			sa.keyInput.space = b;
+			break;
+		case KeyEvent.VK_C:
+			sa.keyInput.c = b;
 			break;
 		}
 	}
-
 	@Override
 	public void keyReleased(KeyEvent e) {
-		switch(e.getKeyCode()) {
-		case KeyEvent.VK_D:
-			sa.keyInput.d = false;
-			break;
-		case KeyEvent.VK_A:
-			sa.keyInput.a = false;
-			break;
-		case KeyEvent.VK_W:
-			sa.keyInput.w = false;
-			break;
-		case KeyEvent.VK_S:
-			sa.keyInput.s = false;
-			break;
-		}
+		keyInput(e, false);
 	}
 
 	@Override
