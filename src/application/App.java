@@ -13,6 +13,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import render.Game;
+
 public class App extends JFrame {
 
 	public static App app;
@@ -21,6 +23,7 @@ public class App extends JFrame {
 	public static GameCycleRunner cycleRunner;
 	public static GameCycleRender cycleRender;
 	public static MousePolling mousePoll;
+	private static Game game;
 	private static JPanel drawPanel;
 	private static InputHandler inputHandler;
 	private static SharedAttributes sharedAttributes;
@@ -52,6 +55,7 @@ public class App extends JFrame {
 		cycleRender = new GameCycleRender();
 		cycleRunner = new GameCycleRunner();
 		mousePoll = new MousePolling();
+		DefineWorld();
 		InitializeGlobals();
 		cycleRender.init();
 		
@@ -61,8 +65,15 @@ public class App extends JFrame {
 		
 	}
 
+	private void DefineWorld() {
+		game = new Game();
+		game.addObject("./src/res/object4.obj", 20);
+		game.addObject("./src/res/object3.obj", 100);
+	}
+
 	private void InitializeGlobals() {
 		sharedAttributes = new SharedAttributes();
+		sharedAttributes.game = game;
 		
 		cycleRender.sa = sharedAttributes;
 		cycleRunner.sa = sharedAttributes;

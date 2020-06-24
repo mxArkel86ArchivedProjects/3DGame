@@ -1,8 +1,8 @@
 package application;
 
-import java.awt.AWTException;
-import java.awt.Robot;
 import java.util.TimerTask;
+
+import render.GameObject;
 import utilities.CONST;
 import utilities.Point;
 import utilities.Vector;
@@ -21,7 +21,7 @@ public class GameCycleRunner extends TimerTask {
 	public void run() {
 		long start = System.currentTimeMillis();
 		
-		/*int x = 0;
+		int x = 0;
 		int y = 0;
 		if(sa.keyInput.w)
 			y+=1;
@@ -41,7 +41,7 @@ public class GameCycleRunner extends TimerTask {
 			sa.rotationy-=CONST.Pi2;
 		if(sa.rotationy<0)
 			sa.rotationy+=CONST.Pi2;
-		*/
+		
 		if(sa.keyInput.mouseCurrent!=null) {
 			
 			
@@ -51,13 +51,13 @@ public class GameCycleRunner extends TimerTask {
 		sa.lookangley +=ylook;
 		sa.lookanglex = angleCheck(sa.lookanglex);
 		sa.lookangley = angleCheck(sa.lookangley);
-		sa.rotationx = sa.lookanglex;
-		sa.rotationy = sa.lookangley;
 		}
 		
-		for (Vector vect : sa.vectors) {
-			vect.out = screenLocation3D(vect.x, vect.y, vect.z, sa.center.x, sa.center.y, sa.center.z, sa.rotationx,
+		for (GameObject obj : sa.game.gameObjects) {
+			for(Vector vect : obj.vectors) {
+			vect.out = screenLocation3D(vect.x, vect.y, vect.z, sa.game.center.x, sa.game.center.y, sa.game.center.z, sa.rotationx,
 					sa.rotationy);
+			}
 		}
 		long end = System.currentTimeMillis();
 		sa.backendcompletion = end-start;
