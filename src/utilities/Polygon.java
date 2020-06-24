@@ -12,7 +12,7 @@ public class Polygon {
 	public Polygon() {
 		
 	}
-	public void addVector(Vector v) {
+	public void addPolygon(Vector v) {
 		vectors.add(v);
 	}
 	public Color c;

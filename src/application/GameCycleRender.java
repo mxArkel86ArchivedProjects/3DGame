@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.geom.Line2D;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -16,7 +15,7 @@ import java.util.Random;
 import render.GameObject;
 import utilities.Point;
 import utilities.Vector;
-import utilities.Voxel;
+import utilities.Polygon;
 
 public class GameCycleRender {
 	public SharedAttributes sa;
@@ -37,17 +36,17 @@ public class GameCycleRender {
 		ArrayList<GameObject> gameObjects = (ArrayList<GameObject>) (sa.game.gameObjects.clone());
 		for (GameObject obj : gameObjects) {
 			// ArrayList<Vector> vectors = (ArrayList<Vector>)(sa.vectors.clone());
-			for (int i = 0; i < obj.voxels.size(); i++) {
-				Voxel vox = obj.voxels.get(i);
-				Polygon p = new Polygon();
-				for (Vector v : vox.vectors) {
+			for (int i = 0; i < obj.polygons.size(); i++) {
+				Polygon poly = obj.polygons.get(i);
+				java.awt.Polygon p = new java.awt.Polygon();
+				for (Vector v : poly.vectors) {
 					if (v.out == null)
 						return;
 					p.addPoint((int) (offset3.x + v.out.x), (int) (offset3.y + v.out.y));
 				}
-				if (vox.c == null)
-					vox.c = getColor();
-				g.setColor(vox.c);
+				if (poly.c == null)
+					poly.c = getColor();
+				g.setColor(poly.c);
 				g.fillPolygon(p);
 			}
 		}

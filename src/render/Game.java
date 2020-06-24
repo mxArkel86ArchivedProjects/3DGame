@@ -5,8 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import utilities.Polygon;
 import utilities.Vector;
-import utilities.Voxel;
 
 public class Game {
 
@@ -33,16 +33,16 @@ public class Game {
 					line = line.substring(2);
 					String[] parts = line.split(" ");
 
-					Voxel vox = new Voxel();
+					Polygon poly = new Polygon();
 					for (int i = 0; i < parts.length; i++) {
 						int vint = Math.abs(Integer.parseInt(parts[i].split("/")[0]) - 1);
 						if (vint < obj.vectors.size()) {
 							Vector v = obj.vectors.get(vint);
-							vox.addVector(v);
+							poly.addPolygon(v);
 						}
 
 					}
-					obj.voxels.add(vox);
+					obj.polygons.add(poly);
 				}
 				// ----
 				line = reader.readLine();
