@@ -56,6 +56,13 @@ public class GameCycleRender {
 			fillOval(g, (int) (offset3.x + vect.out.x - 1), (int) (offset3.y + vect.out.z - 1), 2, 2);
 		}*/
 		
+		g.setColor(Color.RED);
+		g.drawOval(20, 20, 100, 100);
+		g.drawLine(70, 70, (int)(70+Math.cos(sa.lookanglex)*50), (int)(70+Math.sin(sa.lookanglex)*-50));
+		
+		g.drawOval(20, 130, 100, 100);
+		g.drawLine(70, 180, (int)(70+Math.cos(sa.lookangley)*50), (int)(180+Math.sin(sa.lookangley)*-50));
+		
 		long end = System.currentTimeMillis();
 		sa.frontendcompletion = end-start;
 		g.setFont(new Font("Arial", Font.BOLD, 16));

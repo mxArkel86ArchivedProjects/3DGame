@@ -21,12 +21,19 @@ public class Point {
 	public int getY() {
 		return (int)(y);
 	}
-	public void add(double x, double y) {
-		this.x+=x;
-		this.y+=y;
+	public Point add(Point p) {
+		return new Point(this.x+p.x, this.y+p.y);
 	}
-	public Point multiply(int n) {
-		return new Point((int)(x*n), (int)(y*n));
+	public Point subtract(Point p) {
+		return new Point(this.x-p.x, this.y-p.y);
+	}
+	public double distance(Point p) {
+		double tx = p.x-x;
+		double ty = p.y-y;
+		return Math.sqrt(Math.pow(tx, 2)+Math.pow(ty, 2));
+	}
+	public Point multiply(Point point) {
+		return new Point((int)(x*point.x), (int)(y*point.y));
 	}
 	
 }

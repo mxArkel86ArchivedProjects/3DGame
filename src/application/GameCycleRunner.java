@@ -1,5 +1,7 @@
 package application;
 
+import java.awt.AWTException;
+import java.awt.Robot;
 import java.util.TimerTask;
 import utilities.CONST;
 import utilities.Point;
@@ -13,12 +15,13 @@ public class GameCycleRunner extends TimerTask {
 	double looksensitivity = 0.01f;
 	
 	int temp1 = 0;
+
 	
 	@Override
 	public void run() {
 		long start = System.currentTimeMillis();
 		
-		int x = 0;
+		/*int x = 0;
 		int y = 0;
 		if(sa.keyInput.w)
 			y+=1;
@@ -38,14 +41,18 @@ public class GameCycleRunner extends TimerTask {
 			sa.rotationy-=CONST.Pi2;
 		if(sa.rotationy<0)
 			sa.rotationy+=CONST.Pi2;
-		
+		*/
 		if(sa.keyInput.mouseCurrent!=null) {
-		double xlook = (sa.keyInput.mouseCurrent.x - sa.keyInput.mousePrev.x)*looksensitivity;
-		double ylook = (sa.keyInput.mouseCurrent.y - sa.keyInput.mousePrev.y)*looksensitivity;
+			
+			
+		double xlook = sa.keyInput.mouseChange.x*looksensitivity;
+		double ylook = sa.keyInput.mouseChange.y*looksensitivity;
 		sa.lookanglex +=xlook;
 		sa.lookangley +=ylook;
 		sa.lookanglex = angleCheck(sa.lookanglex);
 		sa.lookangley = angleCheck(sa.lookangley);
+		sa.rotationx = sa.lookanglex;
+		sa.rotationy = sa.lookangley;
 		}
 		
 		for (Vector vect : sa.vectors) {

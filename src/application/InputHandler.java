@@ -1,5 +1,7 @@
 package application;
 
+import java.awt.AWTException;
+import java.awt.Robot;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
@@ -14,6 +16,10 @@ import utilities.Point;
 
 public class InputHandler implements MouseListener, KeyListener, MouseMotionListener, ComponentListener {
 	public SharedAttributes sa;
+	
+	public InputHandler() {
+		
+	}
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
@@ -65,7 +71,6 @@ public class InputHandler implements MouseListener, KeyListener, MouseMotionList
 
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
-		
 	}
 
 	@Override
@@ -92,15 +97,9 @@ public class InputHandler implements MouseListener, KeyListener, MouseMotionList
 		
 	}
 
-	Point mousePrev_;
+	
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		Point p = new Point(e.getPoint());
-		if(mousePrev_==null)
-			mousePrev_=p;
-		sa.keyInput.mouseCurrent = p;
-		sa.keyInput.mousePrev = mousePrev_;
-		mousePrev_ = p;
 	}
 
 	@Override

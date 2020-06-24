@@ -1,8 +1,11 @@
 package application;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,6 +20,7 @@ public class App extends JFrame {
 	public static Timer gameTimer;
 	public static GameCycleRunner cycleRunner;
 	public static GameCycleRender cycleRender;
+	public static MousePolling mousePoll;
 	private static JPanel drawPanel;
 	private static InputHandler inputHandler;
 	private static SharedAttributes sharedAttributes;
@@ -47,6 +51,7 @@ public class App extends JFrame {
 		
 		cycleRender = new GameCycleRender();
 		cycleRunner = new GameCycleRunner();
+		mousePoll = new MousePolling();
 		InitializeGlobals();
 		cycleRender.init();
 		
@@ -62,10 +67,11 @@ public class App extends JFrame {
 		cycleRender.sa = sharedAttributes;
 		cycleRunner.sa = sharedAttributes;
 		inputHandler.sa = sharedAttributes;
+		mousePoll.sa = sharedAttributes;
 	}
 
 	private void InitializeRender() {
-		
+		DefineCursor();
 		drawPanel = new JPanel() {
 			@Override
 			public void paintComponent(Graphics g) {
@@ -78,10 +84,22 @@ public class App extends JFrame {
 		add(drawPanel);
 	}
 
+	private void DefineCursor() {
+		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+
+		// Create a new blank cursor.
+		Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+		    cursorImg, new java.awt.Point(0, 0), "blank cursor");
+
+		// Set the blank cursor to the JFrame.
+		getContentPane().setCursor(blankCursor);
+	}
+
 	public void InitializeTimers(){
 		gameTimer = new Timer();
 		drawTimer = new Timer();
 		gameTimer.scheduleAtFixedRate(cycleRunner, 0l, GameSettings.backend_refresh_rate);
+		gameTimer.scheduleAtFixedRate(mousePoll, 0l, GameSettings.mousepoll_rate);
 		drawTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
