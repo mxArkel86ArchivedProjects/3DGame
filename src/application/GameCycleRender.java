@@ -1,21 +1,16 @@
 package application;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.Line2D;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import gameobject.entities.Player;
 import render.GameObject;
 import utilities.Point;
-import utilities.Vector;
 import utilities.Polygon;
+import utilities.Vector;
 
 public class GameCycleRender {
 	public SharedAttributes sa;
@@ -23,54 +18,73 @@ public class GameCycleRender {
 	int mult = 40;
 	int vectormax = 0;
 	int voxelmax = -1;
-	Point offset3 = new Point(400, 350);
+	Point offset3 = new Point(100, 100);
+	
+	
 
 	public void drawComponent(Graphics g) {
+		if(!App.app.drawReady)
+			return;
 		long start = System.currentTimeMillis();
-
+		Player p = sa.player;
 		g.setColor(Color.GREEN);
 
 		ArrayList<GameObject> gameObjects = (ArrayList<GameObject>) (sa.game.gameObjects.clone());
 		for (GameObject obj : gameObjects) {
-			for (int i = 0; i < obj.polygons.size(); i++) {
-				Polygon poly = obj.polygons.get(i);
+			ArrayList<Polygon> polygons = obj.orderedPolygons();
+			for (int i = 0; i < polygons.size(); i++) {
+				Polygon poly = polygons.get(i);
 				
-				java.awt.Polygon p = new java.awt.Polygon();
+				java.awt.Polygon polyg = new java.awt.Polygon();
 				for (Vector v : poly.vectors) {
 					if (v.out == null)
 						return;
-					p.addPoint((int) (offset3.x + v.out.x), (int) (offset3.y + v.out.y));
+					polyg.addPoint((int) (v.out.x), (int) (v.out.y));
 				}
-				if (poly.c == null)
-					poly.c = getColor();
-				g.setColor(poly.c);
-				g.fillPolygon(p);
+				double avg = 0;
+				for(Vector v : poly.vectors)
+					avg+=v.out.z;
+				avg/=poly.vectors.size();
+				int a = (int)(((obj.max-avg)*255)/(obj.max));
+				try {
+				g.setColor(new Color(a, a, a));
+				}catch(Exception e) {
+					g.setColor(Color.RED);
+				}
+				g.fillPolygon(polyg);
 			}
 		}
 
 		//look angles
 		g.setColor(Color.RED);
 		g.drawOval(20, 20, 100, 100);
-		g.drawLine(70, 70, (int) (70 + Math.cos(sa.lookanglex) * 50), (int) (70 + Math.sin(sa.lookanglex) * -50));
+		g.drawLine(70, 70, (int) (70 + Math.cos(p.lookanglex) * 50), (int) (70 + Math.sin(p.lookanglex) * -50));
 
 		g.drawOval(20, 130, 100, 100);
-		g.drawLine(70, 180, (int) (70 + Math.cos(sa.lookangley) * 50), (int) (180 + Math.sin(sa.lookangley) * -50));
+		g.drawLine(70, 180, (int) (70 + Math.cos(p.lookangley) * 50), (int) (180 + Math.sin(p.lookangley) * -50));
 
 		g.drawOval(60, 290, 20, 20);//70, 300
-		g.drawOval((int)(65+sa.player.transform.x*10), (int)(295-sa.player.transform.y*10), 10, 10);
+		Point ppos = new Point(70+sa.player.transform.x*50, 300-sa.player.transform.y*50);
+		g.drawOval(ppos.getX()-5, ppos.getY()-5, 10, 10);
+		double ang1 = -p.lookanglex+p.fov_horizontal;
+		double ang2 = -p.lookanglex-p.fov_horizontal;
+		g.drawLine(ppos.getX(), ppos.getY(), ppos.getX()+(int)(Math.cos(ang1)*50), ppos.getY()+(int)(Math.sin(ang1)*50));
+		g.drawLine(ppos.getX(), ppos.getY(), ppos.getX()+(int)(Math.cos(ang2)*50), ppos.getY()+(int)(Math.sin(ang2)*50));
+		
 		
 		
 		long end = System.currentTimeMillis();
 		sa.frontendcompletion = end - start;
 		g.setFont(new Font("Arial", Font.BOLD, 16));
 		g.setColor(Color.BLACK);
-		g.drawString(String.format("playerpos= %.1f | %.1f | %.1f", sa.player.transform.x, sa.player.transform.y, sa.player.transform.z), 10, 20);
+		g.drawString(String.format("playerpos= %.1f | %.1f | %.1f", p.transform.x, p.transform.y, p.transform.z), 10, 20);
 		g.drawString(String.format("backend completion time= %.0f/%d", (float) (sa.backendcompletion),
 				GameSettings.backend_refresh_rate), 10, 80);
 		g.drawString(String.format("frontend completion time= %.0f/%.1f", (float) (sa.frontendcompletion),
 				1000 / GameSettings.refresh_rate), 10, 110);
-		g.drawString(String.format("lookangles= x:%.2f y:%.2f", sa.lookanglex, sa.lookangley), 10, 140);
+		g.drawString(String.format("lookangles= x:%.2f y:%.2f", p.lookanglex, p.lookangley), 10, 140);
 		g.drawString(String.format("fps= %d", sa.fps), 10, 170);
+		g.drawString("within=" + sa.game.gameObjects.get(0).onScreen, 10, 200);
 
 	}
 

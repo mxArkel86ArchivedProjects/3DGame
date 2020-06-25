@@ -1,7 +1,10 @@
 package application;
 
+import java.awt.Color;
+import java.util.ArrayList;
 import java.util.TimerTask;
 
+import gameobject.entities.Player;
 import gameobject.utilities.Transform;
 import render.GameObject;
 import utilities.CONST;
@@ -13,13 +16,15 @@ public class GameCycleRunner extends TimerTask {
 	public SharedAttributes sa;
 	public String str;
 
-	double speed = 0.01f;
+	double speed = 0.005f;
 	double looksensitivity = 0.01f;
+	Player p;
 
 	int temp1 = 0;
 
 	@Override
 	public void run() {
+		p = sa.player;
 		long start = System.currentTimeMillis();
 
 		playerMovement();
@@ -46,30 +51,58 @@ public class GameCycleRunner extends TimerTask {
 		if (sa.keyInput.d)
 			xMove += 1;
 		if (sa.keyInput.c)
-			zMove -= 1;
-		if (sa.keyInput.space)
 			zMove += 1;
-		sa.player.transform.x += xMove * speed;
-		sa.player.transform.y += yMove * speed;
-		sa.player.transform.z += zMove * speed;
+		if (sa.keyInput.space)
+			zMove -= 1;
+		p.transform.x += xMove * speed;
+		p.transform.y += yMove * speed;
+		p.transform.z += zMove * speed;
 	}
 
 	void gameObjectResolver() {
 		for (GameObject obj : sa.game.gameObjects) {
 			
 			double tx = -obj.transform.x + sa.player.transform.x;
-			double ty = obj.transform.y - sa.player.transform.y;
+			double ty = -obj.transform.y + sa.player.transform.y;
 			double tz = -obj.transform.z + sa.player.transform.z;
 			double dist = GameMath.distance(tx, ty);
 			double dist3d = GameMath.distance(dist, tz);
 			
 			double rotx = GameMath.exactAngle(ty, tx, dist);
+			
 			double roty = GameMath.exactAngle(dist, tz, dist3d);
-
+			double scale = 1/dist3d;
+			
+			
+			
+			//double size =  (obj.size.y + Math.tan(rotx) * obj.size.x) *Math.cos(rotx);
+			//obj.relsize = size;
+			//System.out.println(size);
+			//System.out.println(Math.toDegrees(-p.lookanglex+rotx+Math.PI));
+			//double xoffset = Math.sin(-p.lookanglex+rotx+Math.PI)*GameSettings.windowSize.width/2+GameSettings.windowSize.width/2+size/2;
+			double xoffset = 500;
+			double minz = 0;
+			double maxz = 0;
+			ArrayList<Vector> vects = new ArrayList<Vector>();
 			for (Vector vect : obj.vectors) {
-				vect.out = screenLocation3D(vect.x, vect.y, vect.z, sa.game.center.x, sa.game.center.y,
-						sa.game.center.z, rotx, roty + Math.PI / 2, 1/dist3d);
+				Vector vout = screenLocation3D(vect.x, vect.y, vect.z, sa.game.center.x, sa.game.center.y,
+						sa.game.center.z, rotx, roty + Math.PI / 2, scale).add(new Vector(xoffset,400,0));
+				vects.add(vout);
+				if(vout.z<minz)
+					minz = vout.z;
+				if(vout.z>maxz)
+					maxz = vout.z;
 			}
+			minz = Math.abs(minz);
+			
+			obj.max = maxz+minz;
+			for(int i = 0;i<obj.vectors.size();i++) {
+				Vector v = vects.get(i);
+				Vector v2 = obj.vectors.get(i);
+				v2.out = v;
+				v2.out.z+=minz;
+			}
+			App.app.drawReady = true;
 		}
 	}
 
@@ -77,10 +110,10 @@ public class GameCycleRunner extends TimerTask {
 		if (sa.keyInput.mouseCurrent != null) {
 			double xlook = sa.keyInput.mouseChange.x * looksensitivity;
 			double ylook = sa.keyInput.mouseChange.y * looksensitivity;
-			sa.lookanglex += xlook;
-			sa.lookangley += ylook;
-			sa.lookanglex = angleCheck(sa.lookanglex);
-			sa.lookangley = angleCheck(sa.lookangley);
+			p.lookanglex += xlook;
+			p.lookangley += ylook;
+			p.lookanglex = angleCheck(p.lookanglex);
+			p.lookangley = angleCheck(p.lookangley);
 		}
 	}
 

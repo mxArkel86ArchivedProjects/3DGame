@@ -29,7 +29,7 @@ public class MousePolling extends TimerTask {
 		centerPos = windowPos.add(centerScreen);
 		
 		sa.keyInput.mouseCurrent = new Point(MouseInfo.getPointerInfo().getLocation());
-		sa.keyInput.mouseChange = sa.keyInput.mouseCurrent.subtract(prevPoint);
+		sa.keyInput.mouseChange = prevPoint.subtract(sa.keyInput.mouseCurrent);
 		prevPoint = sa.keyInput.mouseCurrent;
 		if(sa.keyInput.mouseCurrent.distance(centerPos)>300) {
 			r.mouseMove(windowPos.getX()+centerScreen.getX(), windowPos.getY()+centerScreen.getY());

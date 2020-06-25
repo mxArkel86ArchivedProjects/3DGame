@@ -28,6 +28,7 @@ public class App extends JFrame {
 	private static JPanel drawPanel;
 	private static InputHandler inputHandler;
 	private static SharedAttributes sharedAttributes;
+	public static boolean drawReady = false;
 
 	private static final long serialVersionUID = 1L;
 
@@ -67,8 +68,8 @@ public class App extends JFrame {
 
 	private void DefineWorld() {
 		game = new Game();
-		game.addObject("./src/res/object4.obj", 20);
-		game.addObject("./src/res/object3.obj", 100);
+		game.addObject("./src/res/object5.obj", 5);
+		//game.addObject("./src/res/object3.obj", 100);
 	}
 
 	private void InitializeGlobals() {

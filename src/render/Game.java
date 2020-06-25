@@ -23,7 +23,9 @@ public class Game {
 			while (line != null) {
 				if (line.startsWith("v ")) {
 
-					line = line.substring(2);
+					line = line.substring(1);
+					while(line.startsWith(" "))
+						line = line.substring(1);
 					String[] parts = line.split(" ");
 					Vector v = new Vector(Double.parseDouble(parts[0]), Double.parseDouble(parts[1]),
 							Double.parseDouble(parts[2]));
@@ -55,6 +57,12 @@ public class Game {
 			obj.center.x += v.x;
 			obj.center.y += v.y;
 			obj.center.z += v.z;
+			if(v.x>obj.size.x)
+				obj.size.x=v.x;
+			if(v.y>obj.size.y)
+				obj.size.y=v.y;
+			if(v.z>obj.size.z)
+				obj.size.z=v.z;
 		}
 		obj.center.x /= obj.vectors.size();
 		obj.center.y /= obj.vectors.size();
