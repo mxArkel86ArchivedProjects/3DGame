@@ -21,14 +21,5 @@ public class GameObject {
 	public double max = 0;
 	public double relsize_w = 1;
 	public double relsize_h = 1;
-	public ArrayList<DepthPolygon> orderedPolygons() {
-		ArrayList<DepthPolygon> dpolys = new ArrayList<DepthPolygon>();
-		
-		for(Polygon p : polygons) {
-			dpolys.add(new DepthPolygon(p));
-		}
-		Collections.sort(dpolys);
-		
-		return dpolys;
-	}
+	
 }

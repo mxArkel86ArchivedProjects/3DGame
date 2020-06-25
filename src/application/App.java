@@ -75,7 +75,8 @@ public class App extends JFrame {
 
 	private void DefineWorld() {
 		game = new Game();
-		game.addObject("./src/res/object5.obj", 5);
+		//game.addObject("./src/res/object8.obj", 5);
+		GameObject obj = game.addObject("./src/res/object5.obj",1);
 	}
 	private void DefinePlayer() {
 		player = new Player();

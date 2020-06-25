@@ -124,7 +124,7 @@ public class GameCycleRunner extends TimerTask {
 			ArrayList<Vector> vects = new ArrayList<Vector>();
 			for (Vector vect : obj.vectors) {
 				Vector vout = screenLocation3D(vect.x, vect.y, vect.z, obj.center.x, obj.center.y,
-						obj.center.z, rotx, roty + Math.PI / 2, scale).add(new Vector(xoffset,yoffset,0));
+						obj.center.z, rotx+diff, roty + Math.PI / 2, scale).add(new Vector(xoffset,yoffset,0));
 				vects.add(vout);
 				if(vout.z<minz)
 					minz = vout.z;
