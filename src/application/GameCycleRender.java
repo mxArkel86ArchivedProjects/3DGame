@@ -3,10 +3,12 @@ package application;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Random;
 
 import gameobject.entities.Player;
+import gameobject.utilities.DepthPolygon;
 import render.GameObject;
 import utilities.Point;
 import utilities.Polygon;
@@ -19,27 +21,34 @@ public class GameCycleRender {
 	int vectormax = 0;
 	int voxelmax = -1;
 	Point offset3 = new Point(100, 100);
+	public boolean draw = false;
+	
+	public void init() {
+		draw = true;
+	}
 	
 	
 
-	public void drawComponent(Graphics g) {
-		if(!App.app.drawReady)
-			return;
+	public void drawComponent(Graphics2D g) {
+		if(!draw)return;
 		long start = System.currentTimeMillis();
 		Player p = sa.player;
-		g.setColor(Color.GREEN);
-
+		
+		g.setFont(new Font("Arial", Font.BOLD, 16));
+		
 		ArrayList<GameObject> gameObjects = (ArrayList<GameObject>) (sa.game.gameObjects.clone());
 		for (GameObject obj : gameObjects) {
-			ArrayList<Polygon> polygons = obj.orderedPolygons();
+			ArrayList<DepthPolygon> polygons = obj.orderedPolygons();
+
 			for (int i = 0; i < polygons.size(); i++) {
-				Polygon poly = polygons.get(i);
+				DepthPolygon dpoly = polygons.get(i);
+				Polygon poly = dpoly.p;
 				
-				java.awt.Polygon polyg = new java.awt.Polygon();
+				java.awt.Polygon drawpolyg = new java.awt.Polygon();
 				for (Vector v : poly.vectors) {
 					if (v.out == null)
 						return;
-					polyg.addPoint((int) (v.out.x), (int) (v.out.y));
+					drawpolyg.addPoint((int) (v.out.x), (int) (v.out.y));
 				}
 				double avg = 0;
 				for(Vector v : poly.vectors)
@@ -49,9 +58,9 @@ public class GameCycleRender {
 				try {
 				g.setColor(new Color(a, a, a));
 				}catch(Exception e) {
-					g.setColor(Color.RED);
+					
 				}
-				g.fillPolygon(polyg);
+				g.fillPolygon(drawpolyg);
 			}
 		}
 
@@ -75,7 +84,7 @@ public class GameCycleRender {
 		
 		long end = System.currentTimeMillis();
 		sa.frontendcompletion = end - start;
-		g.setFont(new Font("Arial", Font.BOLD, 16));
+		
 		g.setColor(Color.BLACK);
 		g.drawString(String.format("playerpos= %.1f | %.1f | %.1f", p.transform.x, p.transform.y, p.transform.z), 10, 20);
 		g.drawString(String.format("backend completion time= %.0f/%d", (float) (sa.backendcompletion),
@@ -83,26 +92,6 @@ public class GameCycleRender {
 		g.drawString(String.format("frontend completion time= %.0f/%.1f", (float) (sa.frontendcompletion),
 				1000 / GameSettings.refresh_rate), 10, 110);
 		g.drawString(String.format("lookangles= x:%.2f y:%.2f", p.lookanglex, p.lookangley), 10, 140);
-		g.drawString(String.format("fps= %d", sa.fps), 10, 170);
-		g.drawString("within=" + sa.game.gameObjects.get(0).onScreen, 10, 200);
-
-	}
-
-	private Color getColor() {
-		int r = new Random().nextInt(255);
-		int g = new Random().nextInt(255);
-		int b = new Random().nextInt(255);
-		return new Color(r, g, b);
-	}
-
-	private void fillOval(Graphics g, int i, int j, int k, int l) {
-		g.fillOval(i, j, k, l);
-	}
-
-	public Point rotationOffset(double width, double height, double rotation) {
-		double w2 = Math.cos(rotation) * width + Math.sin(rotation) * height;
-		double h2 = Math.cos(rotation) * height + Math.sin(rotation) * width;
-		return new Point(w2 - width, h2 - height);
 	}
 
 }

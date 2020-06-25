@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.util.Timer;
@@ -15,6 +17,7 @@ import javax.swing.WindowConstants;
 
 import gameobject.entities.Player;
 import render.Game;
+import render.GameObject;
 
 public class App extends JFrame {
 
@@ -28,7 +31,7 @@ public class App extends JFrame {
 	private static JPanel drawPanel;
 	private static InputHandler inputHandler;
 	private static SharedAttributes sharedAttributes;
-	public static boolean drawReady = false;
+	private Player player;
 
 	private static final long serialVersionUID = 1L;
 
@@ -38,6 +41,8 @@ public class App extends JFrame {
         app.ShowApp();
         
     }
+
+	
 
 	public void ShowApp() {
 		setVisible(true);
@@ -54,28 +59,32 @@ public class App extends JFrame {
 		setResizable(true);
 		
 		
+		
 		cycleRender = new GameCycleRender();
 		cycleRunner = new GameCycleRunner();
 		mousePoll = new MousePolling();
 		DefineWorld();
+		DefinePlayer();
 		InitializeGlobals();
 		
-		InitializeTimers();
 		InitializeRender();
-		
-		
+		InitializeTimers();
+		cycleRunner.init();
+		cycleRender.init();
 	}
 
 	private void DefineWorld() {
 		game = new Game();
 		game.addObject("./src/res/object5.obj", 5);
-		//game.addObject("./src/res/object3.obj", 100);
+	}
+	private void DefinePlayer() {
+		player = new Player();
 	}
 
 	private void InitializeGlobals() {
 		sharedAttributes = new SharedAttributes();
 		sharedAttributes.game = game;
-		sharedAttributes.player = new Player();
+		sharedAttributes.player = player;
 		
 		cycleRender.sa = sharedAttributes;
 		cycleRunner.sa = sharedAttributes;
@@ -88,10 +97,16 @@ public class App extends JFrame {
 		drawPanel = new JPanel() {
 			@Override
 			public void paintComponent(Graphics g) {
+				Graphics2D g2 = (Graphics2D)g;
 				g.setColor(Color.WHITE);
 				g.fillRect(0, 0, GameSettings.windowSize.getWidth(),GameSettings.windowSize.getHeight());
-				
-				cycleRender.drawComponent(g);
+			    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+			             RenderingHints.VALUE_ANTIALIAS_OFF);
+			    g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+			             RenderingHints.VALUE_RENDER_SPEED);
+			    g2.setRenderingHint(RenderingHints.KEY_DITHERING,
+			             RenderingHints.VALUE_DITHER_ENABLE);
+				cycleRender.drawComponent(g2);
 			}
 		};
 		add(drawPanel);
@@ -116,7 +131,6 @@ public class App extends JFrame {
 		drawTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				if(drawPanel!=null)
 				drawPanel.repaint();
 			}
 

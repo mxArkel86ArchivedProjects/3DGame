@@ -17,28 +17,47 @@ public class GameCycleRunner extends TimerTask {
 	public String str;
 
 	double speed = 0.005f;
-	double looksensitivity = 0.01f;
+	double looksensitivity = 0.001f;
 	Player p;
+	public boolean run = false;
+	public void init() {
+		run = true;
+		runBackend();
+	}
 
 	int temp1 = 0;
 
 	@Override
 	public void run() {
-		p = sa.player;
-		long start = System.currentTimeMillis();
-
-		playerMovement();
-
-		determineMouseLookAngle();
-		gameObjectResolver();
-
-		long end = System.currentTimeMillis();
-		sa.backendcompletion = end - start;
-
-		determineFPS();
+		if(!run)
+			return;
+		runBackend();
+		
 	}
 
-	void playerMovement() {
+	private void runBackend() {
+		SharedAttributes attrib = sa;
+		try {
+			attrib = (SharedAttributes)sa.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		p = attrib.player;
+		long start = System.currentTimeMillis();
+
+		playerMovement(attrib);
+
+		determineMouseLookAngle(attrib);
+		gameObjectResolver(attrib);
+
+		long end = System.currentTimeMillis();
+		attrib.backendcompletion = end - start;
+		
+		sa = attrib;
+	}
+
+	void playerMovement(SharedAttributes a) {
 		int xMove = 0;
 		int yMove = 0;
 		int zMove = 0;
@@ -54,17 +73,18 @@ public class GameCycleRunner extends TimerTask {
 			zMove += 1;
 		if (sa.keyInput.space)
 			zMove -= 1;
-		p.transform.x += xMove * speed;
-		p.transform.y += yMove * speed;
+		
+		p.transform.x += (Math.cos(p.lookanglex) * yMove + Math.cos(p.lookanglex-Math.PI/2)*xMove)*speed;
+		p.transform.y += (Math.sin(p.lookanglex) * yMove + Math.sin(p.lookanglex-Math.PI/2)*xMove)*speed;
 		p.transform.z += zMove * speed;
 	}
 
-	void gameObjectResolver() {
-		for (GameObject obj : sa.game.gameObjects) {
+	void gameObjectResolver(SharedAttributes a) {
+		for (GameObject obj : a.game.gameObjects) {
 			
-			double tx = -obj.transform.x + sa.player.transform.x;
-			double ty = -obj.transform.y + sa.player.transform.y;
-			double tz = -obj.transform.z + sa.player.transform.z;
+			double tx = -obj.transform.x + p.transform.x;
+			double ty = -obj.transform.y + p.transform.y;
+			double tz = -obj.transform.z + p.transform.z;
 			double dist = GameMath.distance(tx, ty);
 			double dist3d = GameMath.distance(dist, tz);
 			
@@ -74,19 +94,37 @@ public class GameCycleRunner extends TimerTask {
 			double scale = 1/dist3d;
 			
 			
+			double h = obj.size.y;
+			double w = obj.size.x;
+			obj.relsize_w = Math.abs(Math.cos(rotx)*w) + Math.abs(Math.sin(rotx)*h)*scale;
+			obj.relsize_h = Math.abs(Math.cos(roty)*h) + Math.abs(Math.sin(roty)*w)*scale;
 			
-			//double size =  (obj.size.y + Math.tan(rotx) * obj.size.x) *Math.cos(rotx);
-			//obj.relsize = size;
-			//System.out.println(size);
-			//System.out.println(Math.toDegrees(-p.lookanglex+rotx+Math.PI));
-			//double xoffset = Math.sin(-p.lookanglex+rotx+Math.PI)*GameSettings.windowSize.width/2+GameSettings.windowSize.width/2+size/2;
-			double xoffset = 500;
+			double diff = -rotx+p.lookanglex;
+			double x2 = Math.sin(diff)*dist;
+			double x1 = GameSettings.windowSize.getWidth()/2+obj.relsize_w;
+			double z2 = Math.cos(diff)*dist;
+			double z = x1/Math.tan(p.fov_horizontal);
+			double scalex = z/z2;
+			double x2f = x2*scalex-obj.relsize_w;
+			
+			double diff2 = -p.lookangley+roty+Math.PI/2;
+			double y2 = Math.sin(diff2)*dist;
+			double y1 = GameSettings.windowSize.getHeight()/2+obj.relsize_h;
+			double z2_ = Math.cos(diff2)*dist;
+			double z_ = y1/Math.tan(p.fov_vertical);
+			double scaley = z_/z2_;
+			double y2f = y2*scaley-obj.relsize_h;
+			
+			
+			
+			double xoffset = x1+x2f;
+			double yoffset = y1+y2f;
 			double minz = 0;
 			double maxz = 0;
 			ArrayList<Vector> vects = new ArrayList<Vector>();
 			for (Vector vect : obj.vectors) {
-				Vector vout = screenLocation3D(vect.x, vect.y, vect.z, sa.game.center.x, sa.game.center.y,
-						sa.game.center.z, rotx, roty + Math.PI / 2, scale).add(new Vector(xoffset,400,0));
+				Vector vout = screenLocation3D(vect.x, vect.y, vect.z, obj.center.x, obj.center.y,
+						obj.center.z, rotx, roty + Math.PI / 2, scale).add(new Vector(xoffset,yoffset,0));
 				vects.add(vout);
 				if(vout.z<minz)
 					minz = vout.z;
@@ -102,28 +140,15 @@ public class GameCycleRunner extends TimerTask {
 				v2.out = v;
 				v2.out.z+=minz;
 			}
-			App.app.drawReady = true;
 		}
 	}
 
-	void determineMouseLookAngle() {
+	void determineMouseLookAngle(SharedAttributes a) {
 		if (sa.keyInput.mouseCurrent != null) {
 			double xlook = sa.keyInput.mouseChange.x * looksensitivity;
 			double ylook = sa.keyInput.mouseChange.y * looksensitivity;
 			p.lookanglex += xlook;
-			p.lookangley += ylook;
-			p.lookanglex = angleCheck(p.lookanglex);
-			p.lookangley = angleCheck(p.lookangley);
-		}
-	}
-
-	void determineFPS() {
-		int fps = (int) (100000 / (GameSettings.refresh_rate * sa.frontendcompletion));
-		if (temp1 < 50)
-			temp1++;
-		else {
-			temp1 = 0;
-			sa.fps = fps;
+			p.lookangley -= ylook;
 		}
 	}
 

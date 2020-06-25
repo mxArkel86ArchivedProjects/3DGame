@@ -11,24 +11,24 @@ import utilities.Polygon;
 public class GameObject {
 	public Transform transform = new Transform(0,0,0);
 	public double scale = 1;
+	public double rotationx = 0;
+	public double rotationy = 0;
 	public ArrayList<Polygon> polygons = new ArrayList<Polygon>();
 	public ArrayList<Vector> vectors = new ArrayList<Vector>();
-	public boolean onScreen = false;
 	
 	public Vector center = new Vector();
 	public Vector size = new Vector();
 	public double max = 0;
-	public double relsize = 1;
-	public ArrayList<Polygon> orderedPolygons() {
-		ArrayList<Polygon> fin = new ArrayList<Polygon>();
+	public double relsize_w = 1;
+	public double relsize_h = 1;
+	public ArrayList<DepthPolygon> orderedPolygons() {
 		ArrayList<DepthPolygon> dpolys = new ArrayList<DepthPolygon>();
+		
 		for(Polygon p : polygons) {
 			dpolys.add(new DepthPolygon(p));
 		}
 		Collections.sort(dpolys);
-		for(DepthPolygon dp : dpolys)
-			fin.add(dp.p);
 		
-		return fin;
+		return dpolys;
 	}
 }

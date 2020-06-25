@@ -12,6 +12,18 @@ public class Transform {
 		this.z = z;
 	}
 
+	public int getX() {
+		return (int)x;
+	}
+
+	public int getY() {
+		return (int)y;
+	}
+
+	public int getZ() {
+		return (int)z;
+	}
+
 	public Transform() {
 	}
 }

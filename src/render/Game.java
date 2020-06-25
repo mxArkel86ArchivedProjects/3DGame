@@ -13,7 +13,7 @@ public class Game {
 	public Vector center = new Vector();
 	public ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
 	
-	public void addObject(String path, double scale) {
+	public GameObject addObject(String path, double scale) {
 		BufferedReader reader;
 		GameObject obj = new GameObject();
 		obj.scale = scale;
@@ -68,5 +68,6 @@ public class Game {
 		obj.center.y /= obj.vectors.size();
 		obj.center.z /= obj.vectors.size();
 		gameObjects.add(obj);
+		return obj;
 	}
 }
