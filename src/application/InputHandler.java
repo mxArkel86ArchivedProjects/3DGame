@@ -14,6 +14,9 @@ public class InputHandler implements MouseListener, KeyListener, FocusListener {
 	KeyInput i;
 
 	public InputHandler() {
+		
+	}
+	public void init() {
 		i = sa.keyInput;
 	}
 

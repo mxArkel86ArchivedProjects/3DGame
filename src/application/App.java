@@ -47,6 +47,8 @@ public class App extends JFrame {
 
 		InitializeRender();
 		InitializeTimers();
+		
+		inputHandler.init();
 		cycleRunner.init();
 		cycleRender.init();
 	}
@@ -64,7 +66,7 @@ public class App extends JFrame {
 	private void InitializeGlobals() {
 		Game game = new Game();
 		//game.addObject("./src/res/object8.obj", 5);
-		game.addObject("./src/res/object5.obj",1);
+		game.addObject("./src/res/object5.obj",2);
 
 		Player player = new Player();
 
