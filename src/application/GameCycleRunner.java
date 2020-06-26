@@ -1,11 +1,10 @@
 package application;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.TimerTask;
 
 import gameobject.entities.Player;
-import gameobject.utilities.Transform;
+import utilities.Size;
 import render.GameObject;
 import utilities.CONST;
 import utilities.GameMath;
@@ -25,14 +24,11 @@ public class GameCycleRunner extends TimerTask {
 		runBackend();
 	}
 
-	int temp1 = 0;
-
 	@Override
 	public void run() {
 		if(!run)
 			return;
 		runBackend();
-		
 	}
 
 	private void runBackend() {
@@ -40,7 +36,6 @@ public class GameCycleRunner extends TimerTask {
 		try {
 			attrib = (SharedAttributes)sa.clone();
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		p = attrib.player;
@@ -53,7 +48,7 @@ public class GameCycleRunner extends TimerTask {
 
 		long end = System.currentTimeMillis();
 		attrib.backendcompletion = end - start;
-		
+
 		sa = attrib;
 	}
 
@@ -73,7 +68,7 @@ public class GameCycleRunner extends TimerTask {
 			zMove += 1;
 		if (sa.keyInput.space)
 			zMove -= 1;
-		
+
 		p.transform.x += (Math.cos(p.lookanglex) * yMove + Math.cos(p.lookanglex-Math.PI/2)*xMove)*speed;
 		p.transform.y += (Math.sin(p.lookanglex) * yMove + Math.sin(p.lookanglex-Math.PI/2)*xMove)*speed;
 		p.transform.z += zMove * speed;
@@ -81,42 +76,41 @@ public class GameCycleRunner extends TimerTask {
 
 	void gameObjectResolver(SharedAttributes a) {
 		for (GameObject obj : a.game.gameObjects) {
-			
+
 			double tx = -obj.transform.x + p.transform.x;
 			double ty = -obj.transform.y + p.transform.y;
 			double tz = -obj.transform.z + p.transform.z;
 			double dist = GameMath.distance(tx, ty);
 			double dist3d = GameMath.distance(dist, tz);
-			
+
 			double rotx = GameMath.exactAngle(ty, tx, dist);
-			
+
 			double roty = GameMath.exactAngle(dist, tz, dist3d);
 			double scale = 1/dist3d;
-			
-			
+
+
 			double h = obj.size.y;
 			double w = obj.size.x;
-			obj.relsize_w = Math.abs(Math.cos(rotx)*w) + Math.abs(Math.sin(rotx)*h)*scale;
-			obj.relsize_h = Math.abs(Math.cos(roty)*h) + Math.abs(Math.sin(roty)*w)*scale;
-			
+			obj.relative_size_out = new Size(Math.abs(Math.cos(rotx)*w) + Math.abs(Math.sin(rotx)*h)*scale, Math.abs(Math.cos(roty)*h) + Math.abs(Math.sin(roty)*w)*scale);
+
 			double diff = -rotx+p.lookanglex;
 			double x2 = Math.sin(diff)*dist;
-			double x1 = GameSettings.windowSize.getWidth()/2+obj.relsize_w;
+			double x1 = GameSettings.windowSize.getWidth()/2+obj.relative_size_out.width;
 			double z2 = Math.cos(diff)*dist;
 			double z = x1/Math.tan(p.fov_horizontal);
 			double scalex = z/z2;
-			double x2f = x2*scalex-obj.relsize_w;
-			
+			double x2f = x2*scalex-obj.relative_size_out.width;
+
 			double diff2 = -p.lookangley+roty+Math.PI/2;
 			double y2 = Math.sin(diff2)*dist;
-			double y1 = GameSettings.windowSize.getHeight()/2+obj.relsize_h;
+			double y1 = GameSettings.windowSize.getHeight()/2+obj.relative_size_out.height;
 			double z2_ = Math.cos(diff2)*dist;
 			double z_ = y1/Math.tan(p.fov_vertical);
 			double scaley = z_/z2_;
-			double y2f = y2*scaley-obj.relsize_h;
-			
-			
-			
+			double y2f = y2*scaley-obj.relative_size_out.height;
+
+
+
 			double xoffset = x1+x2f;
 			double yoffset = y1+y2f;
 			double minz = 0;
@@ -132,8 +126,8 @@ public class GameCycleRunner extends TimerTask {
 					maxz = vout.z;
 			}
 			minz = Math.abs(minz);
-			
-			obj.max = maxz+minz;
+
+			obj.maxZ_out = maxz+minz;
 			for(int i = 0;i<obj.vectors.size();i++) {
 				Vector v = vects.get(i);
 				Vector v2 = obj.vectors.get(i);

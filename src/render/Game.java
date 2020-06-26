@@ -10,9 +10,8 @@ import utilities.Vector;
 
 public class Game {
 
-	public Vector center = new Vector();
 	public ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
-	
+
 	public GameObject addObject(String path, double scale) {
 		BufferedReader reader;
 		GameObject obj = new GameObject();

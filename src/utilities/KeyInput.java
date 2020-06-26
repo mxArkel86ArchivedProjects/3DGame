@@ -9,4 +9,5 @@ public class KeyInput {
 	public boolean c;
 	public Point mouseCurrent;
 	public Point mouseChange;
+	public boolean windowFocused;
 }

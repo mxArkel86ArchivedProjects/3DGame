@@ -1,13 +1,12 @@
 package application;
 
+import render.GameCycleRender;
+import render.CursorUtil;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,7 +16,6 @@ import javax.swing.WindowConstants;
 
 import gameobject.entities.Player;
 import render.Game;
-import render.GameObject;
 
 public class App extends JFrame {
 
@@ -27,66 +25,53 @@ public class App extends JFrame {
 	public static GameCycleRunner cycleRunner;
 	public static GameCycleRender cycleRender;
 	public static MousePolling mousePoll;
-	private static Game game;
 	private static JPanel drawPanel;
 	private static InputHandler inputHandler;
 	private static SharedAttributes sharedAttributes;
-	private Player player;
 
 	private static final long serialVersionUID = 1L;
 
 	public static void main(String[] args) {
         app = new App();
         app.initGUI();
-        app.ShowApp();
-        
+				app.initBackend();
+        app.setVisible(true);
     }
 
-	
-
-	public void ShowApp() {
-		setVisible(true);
-	}
-
-	public void initGUI() {
-		inputHandler = new InputHandler();
-		addMouseListener(inputHandler);
-		addKeyListener(inputHandler);
-		addMouseMotionListener(inputHandler);
-
-		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		setSize(new Dimension(GameSettings.windowSize.getWidth(),GameSettings.windowSize.getHeight()));
-		setResizable(true);
-		
-		
-		
+	void initBackend(){
 		cycleRender = new GameCycleRender();
 		cycleRunner = new GameCycleRunner();
 		mousePoll = new MousePolling();
-		DefineWorld();
-		DefinePlayer();
+
 		InitializeGlobals();
-		
+
 		InitializeRender();
 		InitializeTimers();
 		cycleRunner.init();
 		cycleRender.init();
 	}
 
-	private void DefineWorld() {
-		game = new Game();
-		//game.addObject("./src/res/object8.obj", 5);
-		GameObject obj = game.addObject("./src/res/object5.obj",1);
-	}
-	private void DefinePlayer() {
-		player = new Player();
+	void initGUI() {
+		inputHandler = new InputHandler();
+		addMouseListener(inputHandler);
+		addKeyListener(inputHandler);
+
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		setSize(new Dimension(GameSettings.windowSize.getWidth(),GameSettings.windowSize.getHeight()));
+		setResizable(true);
 	}
 
 	private void InitializeGlobals() {
+		Game game = new Game();
+		//game.addObject("./src/res/object8.obj", 5);
+		game.addObject("./src/res/object5.obj",1);
+
+		Player player = new Player();
+
 		sharedAttributes = new SharedAttributes();
 		sharedAttributes.game = game;
 		sharedAttributes.player = player;
-		
+
 		cycleRender.sa = sharedAttributes;
 		cycleRunner.sa = sharedAttributes;
 		inputHandler.sa = sharedAttributes;
@@ -94,8 +79,9 @@ public class App extends JFrame {
 	}
 
 	private void InitializeRender() {
-		DefineCursor();
+		CursorUtil.setCursorBlank();
 		drawPanel = new JPanel() {
+			private static final long serialVersionUID = 2L;
 			@Override
 			public void paintComponent(Graphics g) {
 				Graphics2D g2 = (Graphics2D)g;
@@ -106,25 +92,14 @@ public class App extends JFrame {
 			    g2.setRenderingHint(RenderingHints.KEY_RENDERING,
 			             RenderingHints.VALUE_RENDER_SPEED);
 			    g2.setRenderingHint(RenderingHints.KEY_DITHERING,
-			             RenderingHints.VALUE_DITHER_ENABLE);
+			             RenderingHints.VALUE_DITHER_DISABLE);
 				cycleRender.drawComponent(g2);
 			}
 		};
 		add(drawPanel);
 	}
 
-	private void DefineCursor() {
-		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-
-		// Create a new blank cursor.
-		Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-		    cursorImg, new java.awt.Point(0, 0), "blank cursor");
-
-		// Set the blank cursor to the JFrame.
-		getContentPane().setCursor(blankCursor);
-	}
-
-	public void InitializeTimers(){
+	void InitializeTimers(){
 		gameTimer = new Timer();
 		drawTimer = new Timer();
 		gameTimer.scheduleAtFixedRate(cycleRunner, 0l, GameSettings.backend_refresh_rate);
@@ -138,4 +113,3 @@ public class App extends JFrame {
 		}, 0l, (long) (1000/GameSettings.refresh_rate));
 	}
 }
-
