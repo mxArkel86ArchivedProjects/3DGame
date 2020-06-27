@@ -13,6 +13,7 @@ public class SharedAttributes implements Cloneable {
 	public Player player;
 
 	public KeyInput keyInput = new KeyInput();
+	public double cfs;//completion frame score (how well performance is doing compared to set fps)
 
 	protected Object clone() throws CloneNotSupportedException
     {

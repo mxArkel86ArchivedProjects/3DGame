@@ -35,5 +35,9 @@ public class Point {
 	public Point multiply(Point point) {
 		return new Point((int)(x*point.x), (int)(y*point.y));
 	}
+	public boolean within(Size windowSize) {
+		boolean b = (x>0&&x<windowSize.width&&y>0&&y<windowSize.height);
+		return b;
+	}
 	
 }
