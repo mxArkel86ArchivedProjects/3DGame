@@ -8,6 +8,8 @@ public class SharedAttributes implements Cloneable {
 
 	public long backendcompletion = 0;
 	public long frontendcompletion = 0;
+	public boolean consoleup = false;
+	public String consoleLine = "";
 
 	public Game game;
 	public Player player;

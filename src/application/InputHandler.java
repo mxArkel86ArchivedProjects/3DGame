@@ -8,21 +8,57 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class InputHandler implements MouseListener, KeyListener, FocusListener {
 	public SharedAttributes sa;
 	KeyInput i;
-
+	
 	public InputHandler() {
-		
+
 	}
+
 	public void init() {
 		i = sa.keyInput;
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		keyInput(e, true);
+		if(sa.consoleup)
+			consoleInput(e);
+		else
+			keyInput(e, true);
+	}
+
+	private void consoleInput(KeyEvent e) {	
+		switch(e.getKeyCode()) {
+		case KeyEvent.VK_ENTER:
+			ArrayList<String> parts = new ArrayList<String>(Arrays.asList(sa.consoleLine.split(" ")));
+			String subject = parts.get(0);
+			if(parts.size()<=1)
+				System.out.println("command without arguments");
+			else {
+				parts.remove(0);
+				boolean b = App.commandHandler.executeCommand(subject, parts);
+				if(!b)
+					System.out.print("command failed");
+				
+				
+			}
+			sa.consoleLine = "";
+			sa.consoleup = false;
+			return;
+		case KeyEvent.VK_DOWN:
+			sa.consoleup = false;
+			sa.consoleLine = "";
+			return;
+		case KeyEvent.VK_BACK_SPACE:
+			if(sa.consoleLine.length()>0)
+				sa.consoleLine = sa.consoleLine.substring(0, sa.consoleLine.length()-1);
+			return;
+		}
+		sa.consoleLine+=e.getKeyChar();
 	}
 
 	private void keyInput(KeyEvent e, boolean b) {
@@ -45,12 +81,18 @@ public class InputHandler implements MouseListener, KeyListener, FocusListener {
 		case KeyEvent.VK_C:
 			i.c = b;
 			break;
+		case KeyEvent.VK_UP:
+			i.tilde = b;
+			if(b)
+				sa.consoleup = true;
+			
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		keyInput(e, false);
+		if(!sa.consoleup)
+			keyInput(e, false);
 	}
 
 	@Override

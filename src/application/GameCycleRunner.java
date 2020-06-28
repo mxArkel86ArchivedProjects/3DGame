@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.TimerTask;
 
 import gameobject.entities.Player;
+import gameobject.utilities.Rotation;
 import utilities.Size;
 import render.GameObject;
 import utilities.CONST;
@@ -86,34 +87,35 @@ public class GameCycleRunner extends TimerTask {
 	void gameObjectResolver(SharedAttributes a) {
 		for (GameObject obj : a.game.gameObjects) {
 
-			double tx = -obj.transform.x + p.transform.x;
-			double ty = -obj.transform.y + p.transform.y;
-			double tz = obj.transform.z - p.transform.z;
+			double tx = p.transform.x - obj.transformoffset.x;
+			double ty = p.transform.y - obj.transformoffset.y;
+			double tz = p.transform.z - obj.transformoffset.z;
+			obj.diff = new Vector(tx, ty, tz);
+			
 			double dist = GameMath.distance(ty, tx);
 			double dist3d = GameMath.distance(dist, tz);
+			obj.dist2d = dist;
 
 			double rotx = GameMath.exactAngle(ty, tx, dist);
 
 			double roty = GameMath.exactAngle(tz, dist, dist3d);
-			//System.out.println(String.format("%f %f %f = %f", dist, tz, dist3d, roty));
+
+			obj.relative_rotation_out = new Rotation(rotx, roty);
 			double scale = 1/dist3d;
 
 
 			double h = obj.size.y;
 			double w = obj.size.x;
 			obj.relative_size_out = new Size(Math.abs(Math.cos(rotx)*w) + Math.abs(Math.sin(rotx)*h)*scale, Math.abs(Math.cos(roty)*h) + Math.abs(Math.sin(roty)*w)*scale);
-
 			
 			double fov_dist = (GameSettings.windowSize.width)/(2*Math.tan(p.camera_fov/2));
 
-			double xoffset = Math.tan(p.rotation.x-(-p.camera_fov/2+rotx)) * fov_dist;
-			double yoffset = Math.tan(p.rotation.y-(-p.camera_fov/2+roty)) * fov_dist;
 			double minz = 0;
 			double maxz = 0;
 			ArrayList<Vector> vects = new ArrayList<Vector>();
 			for (Vector vect : obj.vectors) {
-				Vector vout = screenLocation3D(vect.x, vect.y, vect.z, obj.center.x, obj.center.y,
-						obj.center.z, rotx+xoffset/fov_dist-p.camera_fov/2, -roty+Math.PI-yoffset/fov_dist, scale).add(new Vector(xoffset,yoffset,0));
+				Vector vout = (screenLocation3D(vect.x, vect.y, vect.z, obj.center.x, obj.center.y,
+						obj.center.z, rotx, roty+Math.PI, scale).add(new Vector(GameSettings.windowSize.width/2, GameSettings.windowSize.height/2, 0)));
 				
 				vects.add(vout);
 				if(vout.z<minz)

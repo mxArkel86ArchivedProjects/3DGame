@@ -4,6 +4,7 @@ public class Vector {
 	public double x = 0;
 	public double y = 0;
 	public double z = 0;
+	public Vector textureMap;
 	public Vector out;
 	public Vector(double x, double y, double z) {
 		super();

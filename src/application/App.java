@@ -1,6 +1,7 @@
 package application;
 
 import render.GameCycleRender;
+import render.GameObject;
 import render.CursorUtil;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import gameobject.entities.Player;
+import gameobject.utilities.Transform;
 import render.Game;
 
 public class App extends JFrame {
@@ -26,6 +28,7 @@ public class App extends JFrame {
 	public static Timer gameTimer;
 	public static GameCycleRunner cycleRunner;
 	public static GameCycleRender cycleRender;
+	public static CommandHandler commandHandler;
 	public static MousePolling mousePoll;
 	private static JPanel drawPanel;
 	private static InputHandler inputHandler;
@@ -45,6 +48,7 @@ public class App extends JFrame {
 		cycleRender = new GameCycleRender();
 		cycleRunner = new GameCycleRunner();
 		mousePoll = new MousePolling();
+		commandHandler = new CommandHandler();
 
 		InitializeGlobals();
 
@@ -68,8 +72,9 @@ public class App extends JFrame {
 
 	private void InitializeGlobals() {
 		Game game = new Game();
-		// game.addObject("./src/res/object8.obj", 5);
-		game.addObject("./src/res/object5.obj", 2);
+		//GameObject house = game.addObject("./src/res/object5.obj",1);
+		GameObject van = game.addObject("./src/res/object.obj",1);
+		//house.transformoffset = new Transform(0,0,0.5);
 
 		Player player = new Player();
 
@@ -81,6 +86,7 @@ public class App extends JFrame {
 		cycleRunner.sa = sharedAttributes;
 		inputHandler.sa = sharedAttributes;
 		mousePoll.sa = sharedAttributes;
+		commandHandler.sa = sharedAttributes;
 	}
 
 	private void InitializeRender() {
@@ -96,7 +102,7 @@ public class App extends JFrame {
 				g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 				g2.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
 				
-				g.setColor(Color.WHITE);
+				g.setColor(new Color(150,150,150));
 				g.fillRect(0, 0, GameSettings.windowSize.getWidth(), GameSettings.windowSize.getHeight());
 				cycleRender.drawComponent(g);
 			}
